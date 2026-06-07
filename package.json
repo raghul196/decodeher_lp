@@ -1,0 +1,11 @@
+{
+  "name": "decodeher-lp",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "http-server -S -C .certs/localhost.pem -K .certs/localhost-key.pem -p 8443 -a 0.0.0.0 -c-1"
+  },
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  }
+}

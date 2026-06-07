@@ -4,64 +4,397 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>DecodeHer — Understand Her, Actually</title>
+  <link rel="icon" type="image/png" href="favicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,340;0,9..144,600;1,9..144,500&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    body { background-color: #0D0F14; color: #E5E7EB; font-family: system-ui, sans-serif; }
+    html { scroll-snap-type: y proximity; }
+
+    /* — Philosophy: editorial manifesto type-setting — */
+    .philo-card {
+      position: relative;
+      width: 100%;
+      max-width: 720px;
+      display: flex;
+      flex-direction: column;
+      gap: 1.4rem;
+      z-index: 1;
+      scroll-snap-align: center;
+    }
+    .philo-left  { margin-right: auto; align-items: flex-start; text-align: left; }
+    .philo-right { margin-left: auto;  align-items: flex-end;   text-align: right; }
+    .philo-num {
+      font-family: 'Fraunces', serif;
+      font-weight: 600;
+      font-size: clamp(6.5rem, 17vw, 12.5rem);
+      line-height: 0.72;
+      letter-spacing: -0.045em;
+      color: transparent;
+      -webkit-text-stroke: 1.5px rgba(245, 166, 35, 0.2);
+      position: absolute;
+      top: -2.75rem;
+      z-index: -1;
+      user-select: none;
+      pointer-events: none;
+    }
+    .philo-left  .philo-num { right: -8.5rem; }
+    .philo-right .philo-num { left: -8.5rem; }
+    .philo-kicker {
+      font-size: 0.72rem;
+      letter-spacing: 0.34em;
+      text-transform: uppercase;
+      color: #F5A623;
+      font-weight: 600;
+    }
+    .philo-head {
+      font-family: 'Fraunces', serif;
+      font-optical-sizing: auto;
+      font-weight: 600;
+      font-size: clamp(2.15rem, 5vw, 3.5rem);
+      line-height: 1.16;
+      letter-spacing: -0.01em;
+      color: #fff;
+      max-width: 16ch;
+    }
+    .philo-body {
+      font-size: 1.05rem;
+      line-height: 1.85;
+      color: #9CA3AF;
+      max-width: 52ch;
+    }
+    .philo-mark {
+      font-family: 'Fraunces', serif;
+      font-style: italic;
+      font-weight: 500;
+      color: #fff;
+      padding: 0 0.07em;
+      background-image: linear-gradient(120deg, rgba(245,166,35,0.36) 0%, rgba(245,166,35,0.36) 100%);
+      background-repeat: no-repeat;
+      background-size: 100% 0.38em;
+      background-position: 0 87%;
+    }
+    .philo-rule {
+      width: 48px;
+      height: 1px;
+      background: linear-gradient(to right, #F5A623, transparent);
+    }
+    .philo-right .philo-rule { background: linear-gradient(to left, #F5A623, transparent); }
+
+    body { background-color: #1d1b25; color: #E5E7EB; font-family: system-ui, sans-serif; }
     .accent { color: #F5A623; }
-    .btn-accent { background-color: #F5A623; color: #0D0F14; font-weight: 700; }
-    .btn-accent:hover { background-color: #d48f1a; }
-    .card { background-color: #1A1E28; }
-    .surface { background-color: #13161D; }
+    .bg-accent { background-color: #F5A623; }
+    .btn-gplay { background-color: #F0F0F0; color: #0D0D0D; font-weight: 600; border: none; display: inline-flex; align-items: center; gap: 10px; }
+    .btn-gplay:hover { background-color: #DCDCDC; }
+    .btn-accent { background-color: #F0F0F0; color: #0D0D0D; font-weight: 600; border: none; display: inline-flex; align-items: center; gap: 10px; }
+    .btn-accent:hover { background-color: #DCDCDC; }
+    .surface { background-color: #11131A; }
+    .step-divider { border-top: 1px solid #2a2e3a; }
+    .phone-shadow { filter: drop-shadow(0 20px 40px rgba(0,0,0,0.5)); }
+    .how-it-works-bg { background-color: #1d1b25; }
+    .phone-glow-right { border: 1px solid rgba(255,255,255,0.15); border-radius: 1rem; box-shadow: 0 30px 60px rgba(0,0,0,0.6), 0 0 50px rgba(245,166,35,0.3); }
+    .phone-glow-left { border: 1px solid rgba(255,255,255,0.15); border-radius: 1rem; box-shadow: 0 30px 60px rgba(0,0,0,0.6), 0 0 50px rgba(245,166,35,0.3); }
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes snapIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+    .hero-line {
+      display: inline-block;
+      opacity: 0;
+      animation: fadeSlideUp 0.6s ease forwards;
+    }
+    .hero-punchline {
+      display: inline-block;
+      opacity: 0;
+      animation: snapIn 0.8s ease forwards;
+    }
+    .hero-after {
+      opacity: 0;
+      animation: snapIn 0.8s ease forwards;
+    }
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
   </style>
 </head>
 <body class="min-h-screen flex flex-col">
 
   <!-- Nav -->
-  <nav class="surface px-6 py-4 flex items-center justify-between border-b border-white/5">
-    <div class="flex items-center gap-3">
-      <img src="logo.png" alt="DecodeHer" class="w-9 h-9 rounded-xl" />
-      <span class="text-white font-bold text-lg">Decode<span class="accent">Her</span></span>
-    </div>
-    <div class="flex gap-6 text-sm text-gray-400">
-      <a href="privacy-policy.html" class="hover:text-white transition">Privacy</a>
-      <a href="terms.html" class="hover:text-white transition">Terms</a>
-      <a href="delete-account.html" class="hover:text-white transition">Delete Account</a>
-    </div>
-  </nav>
+  <div class="sticky top-0 z-10 flex justify-center px-6 pt-4">
+    <nav style="background: rgba(48,44,62,0.95); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.1); border-radius: 999px; box-shadow: 0 4px 32px rgba(0,0,0,0.5);" class="w-full max-w-3xl px-6 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <img src="logo.png" alt="DecodeHer" class="w-8 h-8 rounded-xl" />
+        <span class="text-white font-bold text-lg">Decode<span class="accent">Her</span></span>
+      </div>
+      <div class="hidden md:flex gap-6 text-sm text-gray-400">
+        <a href="#philosophy" class="hover:text-white transition">Philosophy</a>
+        <a href="#how-it-works" class="hover:text-white transition">How it Works</a>
+        <a href="#pricing" class="hover:text-white transition">Pricing</a>
+        <a href="mailto:ligerragul@gmail.com" class="hover:text-white transition">Contact</a>
+      </div>
+    </nav>
+  </div>
 
   <!-- Hero -->
-  <main class="flex-1 flex flex-col items-center justify-center text-center px-6 py-24 gap-8">
-    <img src="logo.png" alt="DecodeHer logo" class="w-24 h-24 rounded-3xl shadow-2xl" />
-    <div>
-      <h1 class="text-4xl md:text-5xl font-bold text-white leading-tight">
-        Understand <span class="accent">Her</span>, Actually.
-      </h1>
-      <p class="mt-4 text-gray-400 text-lg max-w-lg mx-auto">
-        DecodeHer translates what she said into what she meant — with tone, context, and reply suggestions.
-      </p>
-    </div>
-
+  <section class="flex flex-col items-center text-center px-6 pt-32 pb-32 gap-10">
+    <h1 class="text-5xl md:text-6xl font-bold tracking-tight text-white" style="line-height: 1.4;">
+      <span class="hero-line" style="animation-delay: 0s;">She speaks fluent emotion.</span><br/>
+      <span class="hero-line" style="animation-delay: 1.2s;">You speak caveman.</span><br/>
+      <span class="hero-punchline" style="animation-delay: 2.4s; color: #F5A623;">We translate.</span>
+    </h1>
+    <p class="text-gray-400 text-lg max-w-md mx-auto leading-relaxed hero-after" style="animation-delay: 3.6s;">
+      Every woman has her own language. DecodeHer decodes hers into plain language you can actually understand.
+    </p>
     <a href="https://play.google.com/store/apps/details?id=com.decodeher.decodeher"
-       class="btn-accent px-8 py-3 rounded-xl text-sm transition inline-block">
-      Download on Google Play
+       class="btn-accent px-9 py-3.5 rounded-xl text-base transition hero-after" style="animation-delay: 3.9s;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M3.18 23.5c-.37-.2-.6-.58-.6-1.02V1.52C2.58 1.08 2.81.7 3.18.5L13.5 12 3.18 23.5z" fill="#EA4335"/>
+        <path d="M17.5 8.5l-4 2.3L3.18.5 17.5 8.5z" fill="#FBBC04"/>
+        <path d="M17.5 15.5L3.18 23.5l10.32-11.5 4 3.5z" fill="#34A853"/>
+        <path d="M21.6 13.2c.27-.35.4-.73.4-1.2s-.13-.85-.4-1.2L17.5 8.5l-4 3.5 4 3.5 4.1-2.3z" fill="#4285F4"/>
+      </svg>
+      <span class="flex flex-col items-start leading-tight">
+        <span class="text-xs font-normal opacity-80">Get it on</span>
+        <span class="text-sm font-bold">Google Play</span>
+      </span>
     </a>
+  </section>
 
-    <!-- Feature pills -->
-    <div class="flex flex-wrap justify-center gap-3 mt-4">
-      <span class="card text-sm text-gray-300 px-4 py-2 rounded-full">AI Translation</span>
-      <span class="card text-sm text-gray-300 px-4 py-2 rounded-full">Tone Detection</span>
-      <span class="card text-sm text-gray-300 px-4 py-2 rounded-full">Reply Suggestions</span>
-      <span class="card text-sm text-gray-300 px-4 py-2 rounded-full">100% Private</span>
+  <!-- Philosophy — editorial manifesto -->
+  <section id="philosophy" style="display: flex; flex-direction: column; gap: 8.5rem; padding: 9rem 1.5rem 7rem; max-width: 1040px; margin: 0 auto; width: 100%;">
+
+    <!-- 01 — Understanding -->
+    <div class="philo-card philo-left reveal">
+      <span class="philo-num" aria-hidden="true">01</span>
+      <span class="philo-rule"></span>
+      <p class="philo-kicker">01 · Philosophy</p>
+      <h3 class="philo-head">Not manipulation. Just <span class="philo-mark">understanding</span>.</h3>
+      <p class="philo-body">When you understand what she actually means, everything changes. Fewer arguments that go nowhere. Less guessing. More connection. DecodeHer exists to help you build something real with her.</p>
     </div>
-  </main>
+
+    <!-- 02 — Her language -->
+    <div class="philo-card philo-right reveal">
+      <span class="philo-num" aria-hidden="true">02</span>
+      <span class="philo-rule"></span>
+      <p class="philo-kicker">02 · Philosophy</p>
+      <h3 class="philo-head">Her language is <span class="philo-mark">hers alone</span>.</h3>
+      <p class="philo-body">No two women communicate the same way. DecodeHer learns her tone, her patterns, the way she expresses her feelings. The more you use it, the sharper it gets. When the app understands her language, you understand her.</p>
+    </div>
+
+    <!-- 03 — Privacy -->
+    <div class="philo-card philo-left reveal">
+      <span class="philo-num" aria-hidden="true">03</span>
+      <span class="philo-rule"></span>
+      <p class="philo-kicker">03 · Philosophy</p>
+      <h3 class="philo-head">Your data is <span class="philo-mark">yours</span>. Full stop.</h3>
+      <p class="philo-body">You're sharing private, vulnerable moments in this app. That deserves real privacy — not a policy nobody reads. Your conversations never leave your phone. No server sees them. No one mines them.</p>
+    </div>
+
+  </section>
+
+  <!-- How it works -->
+  <section id="how-it-works" class="how-it-works-bg px-6 py-20">
+    <div class="max-w-5xl mx-auto">
+      <h2 class="text-3xl font-bold text-white mb-16 reveal">How it works</h2>
+
+      <div class="flex flex-col md:flex-row items-center gap-16">
+
+        <!-- Screenshot -->
+        <div class="flex-1 flex justify-center reveal">
+          <img src="screenshots/03.png" alt="Decode result" class="w-64 rounded-2xl phone-glow-right" />
+        </div>
+
+        <!-- Steps -->
+        <div class="flex-1 flex flex-col reveal" style="position: relative;">
+
+          <!-- Vertical line -->
+          <div style="position: absolute; left: 15px; top: 32px; bottom: 32px; width: 1px; background: linear-gradient(to bottom, #F5A623, rgba(245,166,35,0.15));"></div>
+
+          <!-- Step 01 -->
+          <div class="flex gap-6" style="padding-bottom: 3rem;">
+            <div style="flex-shrink: 0; width: 31px; height: 31px; border-radius: 50%; background: #F5A623; display: flex; align-items: center; justify-content: center; position: relative; z-index: 1;">
+              <span style="font-size: 0.7rem; font-weight: 700; color: #0D0D0D;">01</span>
+            </div>
+            <div class="flex flex-col gap-2">
+              <h3 class="text-xl font-bold text-white">Set the scene.</h3>
+              <p class="text-gray-400 text-base leading-relaxed">Something was already going on before she sent that. Tell the app what it was — a conversation, a plan, something that happened between you. The more it knows, the more accurate the read.</p>
+            </div>
+          </div>
+
+          <!-- Step 02 -->
+          <div class="flex gap-6" style="padding-bottom: 3rem;">
+            <div style="flex-shrink: 0; width: 31px; height: 31px; border-radius: 50%; background: #F5A623; display: flex; align-items: center; justify-content: center; position: relative; z-index: 1;">
+              <span style="font-size: 0.7rem; font-weight: 700; color: #0D0D0D;">02</span>
+            </div>
+            <div class="flex flex-col gap-2">
+              <h3 class="text-xl font-bold text-white">What she said.</h3>
+              <p class="text-gray-400 text-base leading-relaxed">Type it out or drop in a screenshot — from your camera roll or shared directly from your messaging app.</p>
+            </div>
+          </div>
+
+          <!-- Step 03 -->
+          <div class="flex gap-6">
+            <div style="flex-shrink: 0; width: 31px; height: 31px; border-radius: 50%; background: #F5A623; display: flex; align-items: center; justify-content: center; position: relative; z-index: 1;">
+              <span style="font-size: 0.7rem; font-weight: 700; color: #0D0D0D;">03</span>
+            </div>
+            <div class="flex flex-col gap-2">
+              <h3 class="text-xl font-bold text-white">What she meant.</h3>
+              <p class="text-gray-400 text-base leading-relaxed">Her tone. The real meaning behind the words. What she left unsaid. And how to respond without making it worse.</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pricing -->
+  <section id="pricing" class="px-6 py-24 max-w-5xl mx-auto w-full">
+    <h2 class="text-3xl font-bold text-white mb-4 text-center reveal">Simple pricing.</h2>
+    <p class="text-gray-400 text-center mb-14 reveal">Start free. Upgrade when you're ready.</p>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 reveal">
+
+      <!-- Free -->
+      <div class="surface rounded-2xl p-8 flex flex-col gap-6 border border-white/5">
+        <div class="flex flex-col gap-1">
+          <span class="text-xs font-semibold uppercase tracking-widest text-gray-500">Free</span>
+          <span class="text-4xl font-bold text-white">€0</span>
+          <span class="text-gray-500 text-sm">forever</span>
+        </div>
+        <ul class="flex flex-col gap-3 text-sm text-gray-400 flex-1">
+          <li class="flex items-center gap-2"><span class="text-gray-600">✓</span> 5 decodes / day</li>
+          <li class="flex items-center gap-2"><span class="text-gray-600">✓</span> 10 OCR / day</li>
+          <li class="flex items-center gap-2"><span class="text-gray-600">✓</span> 1 profile</li>
+          <li class="flex items-center gap-2"><span class="text-gray-600">—</span> Ask follow-ups</li>
+          <li class="flex items-center gap-2"><span class="text-gray-600">—</span> Voice notes</li>
+          <li class="flex items-center gap-2"><span class="text-gray-600">—</span> AI profile summary</li>
+        </ul>
+        <a href="https://play.google.com/store/apps/details?id=com.decodeher.decodeher"
+           class="block text-center py-3 rounded-xl border border-white/10 text-gray-300 text-sm font-semibold hover:border-white/30 hover:text-white transition">
+          Get started
+        </a>
+      </div>
+
+      <!-- Plus (highlighted) -->
+      <div class="rounded-2xl p-8 flex flex-col gap-6 border border-[#F5A623]/60 relative" style="background-color: #1a1810;">
+        <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-accent text-black text-xs font-bold px-4 py-1 rounded-full tracking-wide">POPULAR</div>
+        <div class="flex flex-col gap-1">
+          <span class="text-xs font-semibold uppercase tracking-widest accent">Plus</span>
+          <span class="text-4xl font-bold text-white">€4.99</span>
+          <span class="text-gray-500 text-sm">per month</span>
+        </div>
+        <ul class="flex flex-col gap-3 text-sm text-gray-300 flex-1">
+          <li class="flex items-center gap-2"><span class="accent">✓</span> 30 decodes / day</li>
+          <li class="flex items-center gap-2"><span class="accent">✓</span> 30 OCR / day</li>
+          <li class="flex items-center gap-2"><span class="accent">✓</span> 5 profiles</li>
+          <li class="flex items-center gap-2"><span class="accent">✓</span> 20 ask follow-ups / day</li>
+          <li class="flex items-center gap-2"><span class="accent">✓</span> 10 voice notes / day</li>
+          <li class="flex items-center gap-2"><span class="accent">✓</span> AI profile summary</li>
+        </ul>
+        <a href="https://play.google.com/store/apps/details?id=com.decodeher.decodeher"
+           class="block text-center py-3 rounded-xl bg-accent text-black text-sm font-bold hover:opacity-90 transition">
+          Get Plus
+        </a>
+      </div>
+
+      <!-- Pro -->
+      <div class="surface rounded-2xl p-8 flex flex-col gap-6 border border-white/5">
+        <div class="flex flex-col gap-1">
+          <span class="text-xs font-semibold uppercase tracking-widest text-gray-500">Pro</span>
+          <span class="text-4xl font-bold text-white">€9.99</span>
+          <span class="text-gray-500 text-sm">per month</span>
+        </div>
+        <ul class="flex flex-col gap-3 text-sm text-gray-400 flex-1">
+          <li class="flex items-center gap-2"><span class="text-gray-300">✓</span> 75 decodes / day</li>
+          <li class="flex items-center gap-2"><span class="text-gray-300">✓</span> 75 OCR / day</li>
+          <li class="flex items-center gap-2"><span class="text-gray-300">✓</span> Unlimited profiles</li>
+          <li class="flex items-center gap-2"><span class="text-gray-300">✓</span> 50 ask follow-ups / day</li>
+          <li class="flex items-center gap-2"><span class="text-gray-300">✓</span> 30 voice notes / day</li>
+          <li class="flex items-center gap-2"><span class="text-gray-300">✓</span> AI profile summary</li>
+        </ul>
+        <a href="https://play.google.com/store/apps/details?id=com.decodeher.decodeher"
+           class="block text-center py-3 rounded-xl border border-white/10 text-gray-300 text-sm font-semibold hover:border-white/30 hover:text-white transition">
+          Get Pro
+        </a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="px-6 py-24 flex flex-col items-center text-center gap-5">
+    <h2 class="text-3xl md:text-4xl font-bold text-white">Ready to actually understand her?</h2>
+    <p class="text-gray-400 text-base">Free to download. No commitment.</p>
+    <a href="https://play.google.com/store/apps/details?id=com.decodeher.decodeher"
+       class="btn-accent px-10 py-3.5 rounded-xl text-base transition mt-2">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M3.18 23.5c-.37-.2-.6-.58-.6-1.02V1.52C2.58 1.08 2.81.7 3.18.5L13.5 12 3.18 23.5z" fill="#EA4335"/>
+        <path d="M17.5 8.5l-4 2.3L3.18.5 17.5 8.5z" fill="#FBBC04"/>
+        <path d="M17.5 15.5L3.18 23.5l10.32-11.5 4 3.5z" fill="#34A853"/>
+        <path d="M21.6 13.2c.27-.35.4-.73.4-1.2s-.13-.85-.4-1.2L17.5 8.5l-4 3.5 4 3.5 4.1-2.3z" fill="#4285F4"/>
+      </svg>
+      <span class="flex flex-col items-start leading-tight">
+        <span class="text-xs font-normal opacity-80">Get it on</span>
+        <span class="text-sm font-bold">Google Play</span>
+      </span>
+    </a>
+  </section>
 
   <!-- Footer -->
-  <footer class="surface border-t border-white/5 py-6 text-center text-sm text-gray-500 flex flex-wrap justify-center gap-4">
+  <footer class="surface border-t border-white/5 py-6 text-center text-sm text-gray-500 flex flex-wrap justify-center gap-6 mt-auto">
     <a href="privacy-policy.html" class="hover:text-white transition">Privacy Policy</a>
     <a href="terms.html" class="hover:text-white transition">Terms of Service</a>
     <a href="delete-account.html" class="hover:text-white transition">Delete Account</a>
-    <a href="mailto:contact@pvfreund.com" class="hover:text-white transition">Contact</a>
+    <a href="mailto:ligerragul@gmail.com" class="hover:text-white transition">Contact</a>
   </footer>
 
+  <script>
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          observer.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+    // re-check after hero animation completes
+    setTimeout(() => {
+      document.querySelectorAll('.reveal').forEach(el => {
+        const rect = el.getBoundingClientRect();
+        if (rect.top < window.innerHeight) el.classList.add('visible');
+      });
+    }, 5500);
+
+    function revealAll() {
+      document.querySelectorAll('.hero-line, .hero-punchline, .hero-after').forEach(el => {
+        el.style.transition = 'none';
+        el.style.animation = 'none';
+        el.style.opacity = '1';
+        el.style.transform = 'none';
+      });
+      document.querySelectorAll('.reveal').forEach(el => {
+        el.style.transitionDelay = '0s';
+        el.style.transition = 'none';
+        el.style.opacity = '1';
+        el.style.transform = 'none';
+        el.classList.add('visible');
+      });
+      window.removeEventListener('scroll', revealAll);
+    }
+    window.addEventListener('scroll', revealAll, { passive: true });
+  </script>
 </body>
 </html>
