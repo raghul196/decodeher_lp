@@ -10,8 +10,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,340;0,9..144,600;1,9..144,500&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    html { scroll-snap-type: y proximity; }
-
     /* — Philosophy: editorial manifesto type-setting — */
     .philo-card {
       position: relative;
@@ -21,7 +19,6 @@
       flex-direction: column;
       gap: 1.4rem;
       z-index: 1;
-      scroll-snap-align: center;
     }
     .philo-left  { margin-right: auto; align-items: flex-start; text-align: left; }
     .philo-right { margin-left: auto;  align-items: flex-end;   text-align: right; }
@@ -38,16 +35,10 @@
       z-index: -1;
       user-select: none;
       pointer-events: none;
+      transition: transform 0.1s linear;
     }
     .philo-left  .philo-num { right: -8.5rem; }
     .philo-right .philo-num { left: -8.5rem; }
-    .philo-kicker {
-      font-size: 0.72rem;
-      letter-spacing: 0.34em;
-      text-transform: uppercase;
-      color: #F5A623;
-      font-weight: 600;
-    }
     .philo-head {
       font-family: 'Fraunces', serif;
       font-optical-sizing: auto;
@@ -72,15 +63,27 @@
       padding: 0 0.07em;
       background-image: linear-gradient(120deg, rgba(245,166,35,0.36) 0%, rgba(245,166,35,0.36) 100%);
       background-repeat: no-repeat;
-      background-size: 100% 0.38em;
+      background-size: 0% 0.38em;
       background-position: 0 87%;
+      transition: background-size 0.5s ease;
     }
-    .philo-rule {
-      width: 48px;
-      height: 1px;
-      background: linear-gradient(to right, #F5A623, transparent);
+    .philo-card.visible .philo-mark {
+      transition-delay: 0.85s;
+      background-size: 100% 0.38em;
     }
-    .philo-right .philo-rule { background: linear-gradient(to left, #F5A623, transparent); }
+    .philo-card .philo-head,
+    .philo-card .philo-body {
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .philo-card .philo-head { transition-delay: 0.2s; }
+    .philo-card .philo-body { transition-delay: 0.35s; }
+    .philo-card.visible .philo-head,
+    .philo-card.visible .philo-body {
+      opacity: 1;
+      transform: translateY(0);
+    }
 
     body { background-color: #1d1b25; color: #E5E7EB; font-family: system-ui, sans-serif; }
     .accent { color: #F5A623; }
@@ -112,6 +115,21 @@
       display: inline-block;
       opacity: 0;
       animation: snapIn 0.8s ease forwards;
+    }
+    .hero-glow {
+      position: relative;
+    }
+    .hero-glow::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 60% 50% at 50% 45%, rgba(245, 166, 35, 0.12), transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .hero-glow > * {
+      position: relative;
+      z-index: 1;
     }
     .hero-after {
       opacity: 0;
@@ -147,7 +165,7 @@
   </div>
 
   <!-- Hero -->
-  <section class="flex flex-col items-center text-center px-6 pt-32 pb-32 gap-10">
+  <section class="hero-glow flex flex-col items-center justify-center text-center px-6 gap-10" style="min-height: 100vh;">
     <h1 class="text-5xl md:text-6xl font-bold tracking-tight text-white" style="line-height: 1.4;">
       <span class="hero-line" style="animation-delay: 0s;">She speaks fluent emotion.</span><br/>
       <span class="hero-line" style="animation-delay: 1.2s;">You speak caveman.</span><br/>
@@ -177,8 +195,6 @@
     <!-- 01 — Understanding -->
     <div class="philo-card philo-left reveal">
       <span class="philo-num" aria-hidden="true">01</span>
-      <span class="philo-rule"></span>
-      <p class="philo-kicker">01 · Philosophy</p>
       <h3 class="philo-head">Not manipulation. Just <span class="philo-mark">understanding</span>.</h3>
       <p class="philo-body">When you understand what she actually means, everything changes. Fewer arguments that go nowhere. Less guessing. More connection. DecodeHer exists to help you build something real with her.</p>
     </div>
@@ -186,8 +202,6 @@
     <!-- 02 — Her language -->
     <div class="philo-card philo-right reveal">
       <span class="philo-num" aria-hidden="true">02</span>
-      <span class="philo-rule"></span>
-      <p class="philo-kicker">02 · Philosophy</p>
       <h3 class="philo-head">Her language is <span class="philo-mark">hers alone</span>.</h3>
       <p class="philo-body">No two women communicate the same way. DecodeHer learns her tone, her patterns, the way she expresses her feelings. The more you use it, the sharper it gets. When the app understands her language, you understand her.</p>
     </div>
@@ -195,10 +209,8 @@
     <!-- 03 — Privacy -->
     <div class="philo-card philo-left reveal">
       <span class="philo-num" aria-hidden="true">03</span>
-      <span class="philo-rule"></span>
-      <p class="philo-kicker">03 · Philosophy</p>
       <h3 class="philo-head">Your data is <span class="philo-mark">yours</span>. Full stop.</h3>
-      <p class="philo-body">You're sharing private, vulnerable moments in this app. That deserves real privacy — not a policy nobody reads. Your conversations never leave your phone. No server sees them. No one mines them.</p>
+      <p class="philo-body">You're sharing private, vulnerable moments in this app. That deserves real privacy — not a policy nobody reads. Your conversations live in an encrypted vault on your phone. We don't store them, log them, or mine them — once you get your answer, it's gone.</p>
     </div>
 
   </section>
@@ -370,6 +382,21 @@
       });
     }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
     document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+    // subtle parallax drift on philosophy ghost numerals
+    const philoNums = document.querySelectorAll('.philo-num');
+    function parallaxPhiloNums() {
+      philoNums.forEach(el => {
+        const rect = el.getBoundingClientRect();
+        const offset = (rect.top - window.innerHeight / 2) * 0.06;
+        el.style.transform = `translateY(${offset}px)`;
+      });
+    }
+    if (philoNums.length) {
+      parallaxPhiloNums();
+      window.addEventListener('scroll', parallaxPhiloNums, { passive: true });
+    }
+
     // re-check after hero animation completes
     setTimeout(() => {
       document.querySelectorAll('.reveal').forEach(el => {
@@ -378,23 +405,16 @@
       });
     }, 5500);
 
-    function revealAll() {
+    function skipHeroIntro() {
       document.querySelectorAll('.hero-line, .hero-punchline, .hero-after').forEach(el => {
         el.style.transition = 'none';
         el.style.animation = 'none';
         el.style.opacity = '1';
         el.style.transform = 'none';
       });
-      document.querySelectorAll('.reveal').forEach(el => {
-        el.style.transitionDelay = '0s';
-        el.style.transition = 'none';
-        el.style.opacity = '1';
-        el.style.transform = 'none';
-        el.classList.add('visible');
-      });
-      window.removeEventListener('scroll', revealAll);
+      window.removeEventListener('scroll', skipHeroIntro);
     }
-    window.addEventListener('scroll', revealAll, { passive: true });
+    window.addEventListener('scroll', skipHeroIntro, { passive: true });
   </script>
 </body>
 </html>
